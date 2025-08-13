@@ -1,0 +1,4 @@
+name: Inventory
+version: '1.0-RELEASE'
+main: com.tapocheck103.inventory.Inventory
+api-version: '1.21'
