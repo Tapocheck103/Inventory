@@ -20,16 +20,36 @@ public class InventoryRenameCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player p = (Player) sender;
-        if (args.length < 1) { p.sendMessage("§e/inventoryrename <имя>"); return true; }
+        if (args.length < 1) {
+            sender.sendMessage("§eИспользование: /inventoryrename <имя> [ник]");
+            return true;
+        }
 
-        String name = String.join(" ", args);
+        // Определяем игрока, чьи предметы меняем
+        Player target;
+        if (args.length >= 2) {
+            target = Bukkit.getPlayer(args[args.length - 1]); // последний аргумент как ник
+            if (target == null) {
+                sender.sendMessage("§cИгрок не найден!");
+                return true;
+            }
+        } else {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("§cТолько игрок может выполнить без указания цели!");
+                return true;
+            }
+            target = (Player) sender;
+        }
+
+        // Собираем имя
+        String name = String.join(" ", args.length >= 2 ?
+                java.util.Arrays.copyOf(args, args.length - 1) : args);
+
         Map<Integer, ItemMeta> saved = new HashMap<>();
 
         // Сохраняем и меняем имена
-        for (int i = 0; i < p.getInventory().getSize(); i++) {
-            ItemStack item = p.getInventory().getItem(i);
+        for (int i = 0; i < target.getInventory().getSize(); i++) {
+            ItemStack item = target.getInventory().getItem(i);
             if (item != null && item.getType() != Material.AIR) {
                 saved.put(i, item.getItemMeta().clone());
                 ItemMeta m = item.getItemMeta();
@@ -41,14 +61,14 @@ public class InventoryRenameCommand implements CommandExecutor {
         // Через 3 сек возвращаем оригинал
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (Map.Entry<Integer, ItemMeta> e : saved.entrySet()) {
-                ItemStack item = p.getInventory().getItem(e.getKey());
+                ItemStack item = target.getInventory().getItem(e.getKey());
                 if (item != null && item.getType() != Material.AIR)
                     item.setItemMeta(e.getValue());
             }
-            p.sendMessage("§eИмена восстановлены!");
+            target.sendMessage("§eОригинальные имена предметов восстановлены!");
         }, 60L);
 
-        p.sendMessage("§aПредметы переименованы!");
+        target.sendMessage("§aВсе предметы временно переименованы!");
         return true;
     }
 }
