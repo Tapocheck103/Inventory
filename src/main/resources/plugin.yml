@@ -5,7 +5,11 @@ api-version: 1.20
 commands:
   duplicate:
     description: Дублирует предмет из указанного слота хотбара.
-    usage: /duplicate <номер_слота 0-9>
+    usage: /duplicate <номер_слота 0-9> <ник>
+    permission: inventory.duplicate
+    permission-message: §cУ вас нет прав на эту команду.
   inventoryrename:
     description: Временно переименовывает все предметы в инвентаре.
-    usage: /inventoryrename <новое_имя>
+    usage: /inventoryrename <новое_имя> <ник>
+    permission: inventory.rename
+    permission-message: §cУ вас нет прав на эту команду.
